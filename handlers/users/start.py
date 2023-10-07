@@ -48,7 +48,7 @@ async def process_registration(message: types.Message):
     await RegistrationStates.NAME.set()
 
 
-@dp.message_handler(lambda message: message.text, state=RegistrationStates.NAME)
+@dp.message_handler(lambda message: message.text.isalpha(), state=RegistrationStates.NAME)
 async def process_name(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['name'] = message.text
@@ -58,14 +58,29 @@ async def process_name(message: types.Message, state: FSMContext):
         await RegistrationStates.LASTNAME.set()
 
 
-@dp.message_handler(lambda message: message.text, state=RegistrationStates.LASTNAME)
+@dp.message_handler(lambda message: not message.text.isalpha(), state=RegistrationStates.NAME)
+async def process_name_invalid(message: types.Message):
+    return await message.reply("Ім'я повинно містити тільки букви. Повторіть ще раз:")
+
+
+@dp.message_handler(lambda message: message.text.isalpha(), state=RegistrationStates.LASTNAME)
 async def process_lastname(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['last_name'] = message.text
 
-        await message.reply("І, нарешті, введіть ваш номер телефону:")
+        await message.reply("І, нарешті, введіть ваш номер телефону (тільки цифри):")
 
         await RegistrationStates.PHONE.set()
+
+
+@dp.message_handler(lambda message: not message.text.isalpha(), state=RegistrationStates.LASTNAME)
+async def process_lastname_invalid(message: types.Message):
+    return await message.reply("Прізвище повинно містити тільки букви. Повторіть ще раз:")
+
+
+@dp.message_handler(lambda message: not message.text.isdigit(), state=RegistrationStates.LASTNAME)
+async def process_lastname_invalid(message: types.Message):
+    return await message.reply("Прізвище повинно містити тільки букви. Повторіть ще раз:")
 
 
 @dp.message_handler(lambda message: not message.text.isdigit(), state=RegistrationStates.PHONE)
@@ -84,3 +99,9 @@ async def process_phone(message: types.Message, state: FSMContext):
                             reply_markup=ReplyKeyboardRemove())
 
     await state.finish()
+
+
+if __name__ == '__main__':
+    from aiogram import executor
+
+    executor.start_polling(dp, skip_updates=True)
