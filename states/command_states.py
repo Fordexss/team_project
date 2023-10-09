@@ -6,3 +6,8 @@ class RegistrationStates(StatesGroup):
     NAME = State()
     LASTNAME = State()
     PHONE = State()
+
+# for howdoisay
+class HowDoISayStates(StatesGroup):
+    Ukrainian = State()
+    English = State()
