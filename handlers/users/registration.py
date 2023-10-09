@@ -1,48 +1,32 @@
-import sqlite3
-
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Command
 from aiogram.types import ReplyKeyboardRemove, ReplyKeyboardMarkup, KeyboardButton
 
-from loader import dp
+from loader import dp, db_user
 from states import RegistrationStates
-
-conn = sqlite3.connect('database.db')
-cursor = conn.cursor()
-cursor.execute('''CREATE TABLE IF NOT EXISTS учні
-                  (id INTEGER PRIMARY KEY AUTOINCREMENT,
-                   name TEXT,
-                   last_name TEXT,
-                   phone_number TEXT)''')
-conn.commit()
-conn.close()
-
-
-async def save_user_data(data, user_id):
-    conn = sqlite3.connect('database.db')
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO учні (name, last_name, phone_number) VALUES (?, ?, ?)",
-                   (data['name'], data['last_name'], data['phone_number']))
-    conn.commit()
-    conn.close()
 
 
 @dp.message_handler(Command('start'))
-async def cmd_start(message: types.Message):
-    markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-    item = KeyboardButton("Відправити мої дані")
-    markup.add(item)
+async def cmd_start(message: types.Message, state: FSMContext):
+    user_id = message.from_user.id
 
-    await message.reply("Вас вітаємо! Перед тим як продовжити, натисніть кнопку 'Відправити мої дані'.",
-                        reply_markup=markup)
+    if not db_user.user_exists(user_id):
+        markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+        item = KeyboardButton("Відправити мої дані")
+        markup.add(item)
 
-    await RegistrationStates.NAME.set()
+        await message.reply("Вас вітаємо! Перед тим як продовжити, натисніть кнопку 'Відправити мої дані'.",
+                            reply_markup=markup)
+
+        await RegistrationStates.NAME.set()
+    else:
+        await message.reply("Ви вже зареєстровані. Дякуємо!")
 
 
 @dp.message_handler(lambda message: message.text == "Відправити мої дані", state=RegistrationStates.NAME)
 async def process_registration(message: types.Message):
-    markup = types.ReplyKeyboardRemove()
+    markup = ReplyKeyboardRemove()
     await message.reply("Для подальшого введіть ваше ім'я:", reply_markup=markup)
 
     await RegistrationStates.NAME.set()
@@ -93,10 +77,9 @@ async def process_phone(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['phone_number'] = message.text
 
-        await save_user_data(data, message.from_user.id)
+        db_user.save_user_data(data, message.from_user.id)
 
         await message.reply("Дані відправлено та збережено в базі даних. Дякуємо за реєстрацію!",
                             reply_markup=ReplyKeyboardRemove())
 
     await state.finish()
-
