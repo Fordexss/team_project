@@ -16,6 +16,12 @@ class DbUserInterface(BasicInterface):
         is_user_exists = self.cursor.fetchone()[0]
         return bool(is_user_exists)
 
+    def remove_user_from_db(self, user_id):
+        self.cursor.execute("""
+            DELETE FROM students WHERE id = ?
+        """, (user_id,))
+        self.conn.commit()
+
     def create_default_table(self):
         self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS students (
@@ -25,4 +31,4 @@ class DbUserInterface(BasicInterface):
                 phone_number VARCHAR(255)
             );
         """)
-        return self.conn.commit()
+        self.conn.commit()

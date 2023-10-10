@@ -6,6 +6,9 @@ class RegistrationStates(StatesGroup):
     NAME = State()
     LASTNAME = State()
     PHONE = State()
+    CAPTCHA = State()
+    CONFIRMATION_STATE = State()
+
 
 # for howdoisay
 class HowDoISayStates(StatesGroup):

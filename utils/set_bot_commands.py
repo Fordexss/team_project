@@ -6,6 +6,7 @@ async def set_default_commands(dp):
         [
             types.BotCommand("start", "Запустить бота"),
             types.BotCommand("info", "Вывести справку"),
+            types.BotCommand("remove_me", "Видалити мене з бази даних"),
             types.BotCommand("howdoisay", "Перекладач"),
         ]
     )
