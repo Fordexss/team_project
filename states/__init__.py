@@ -1,1 +1,1 @@
-from .command_states import RegistrationStates
+from .command_states import RegistrationStates, HowDoISayStates

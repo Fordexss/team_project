@@ -1,14 +1,41 @@
+import random
+import string
+
 from aiogram import types
 from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters import Command
-from aiogram.types import ReplyKeyboardRemove, ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import ReplyKeyboardRemove, ReplyKeyboardMarkup, KeyboardButton, InputFile
+from captcha.image import ImageCaptcha
 
 from loader import dp, db_user
 from states import RegistrationStates
 
+captcha = ImageCaptcha(width=450, height=200)
 
-@dp.message_handler(Command('start'))
-async def cmd_start(message: types.Message, state: FSMContext):
+CAPTCHA_IMAGE_PATH = "captcha.png"
+
+
+async def send_captcha_image(user_id, message, state):
+    captcha_text = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+
+    captcha_image = captcha.generate(captcha_text)
+
+    async with state.proxy() as state_data:
+        state_data['captcha'] = captcha_text
+
+    with open(CAPTCHA_IMAGE_PATH, 'wb') as image_file:
+        image_file.write(captcha_image.read())
+
+    # Відправляємо зображення капчі як InputFile
+    with open(CAPTCHA_IMAGE_PATH, 'rb') as image_file:
+        await message.reply_photo(InputFile(image_file),
+                                  caption=f"Дані відправлено та збережено в базі даних. "
+                                          f"Дякуємо за реєстрацію!\n"
+                                          f"Перед завершенням реєстрації",
+                                  reply_markup=ReplyKeyboardRemove())
+
+
+@dp.message_handler(commands=['start'], state="*")  # Обробка будь якого стану
+async def start_command(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
 
     if not db_user.user_exists(user_id):
@@ -62,11 +89,6 @@ async def process_lastname_invalid(message: types.Message):
     return await message.reply("Прізвище повинно містити тільки букви. Повторіть ще раз:")
 
 
-@dp.message_handler(lambda message: not message.text.isdigit(), state=RegistrationStates.LASTNAME)
-async def process_lastname_invalid(message: types.Message):
-    return await message.reply("Прізвище повинно містити тільки букви. Повторіть ще раз:")
-
-
 @dp.message_handler(lambda message: not message.text.isdigit(), state=RegistrationStates.PHONE)
 async def process_phone_invalid(message: types.Message):
     return await message.reply("Номер телефону повинен бути числом. Спробуйте ще раз.")
@@ -77,9 +99,31 @@ async def process_phone(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['phone_number'] = message.text
 
-        db_user.save_user_data(data, message.from_user.id)
+    # Оновлюємо стан до RegistrationStates.CAPTCHA
+    await RegistrationStates.CAPTCHA.set()
 
-        await message.reply("Дані відправлено та збережено в базі даних. Дякуємо за реєстрацію!",
-                            reply_markup=ReplyKeyboardRemove())
+    # Відправляємо зображення капчі
+    await send_captcha_image(message.from_user.id, message, state)
 
-    await state.finish()
+
+@dp.message_handler(lambda message: True, state=RegistrationStates.CAPTCHA)
+async def process_captcha(message: types.Message, state: FSMContext):
+    user_id = message.from_user.id
+    async with state.proxy() as data:
+        correct_captcha = data.get('captcha')
+        attempts_left = data.get('attempts_left', 2)
+
+        if message.text.lower() == correct_captcha.lower():
+            db_user.save_user_data(data, user_id)
+            await message.reply("Капчу введено вірно. Реєстрація завершена!",
+                                reply_markup=ReplyKeyboardRemove())
+            await state.finish()
+        else:
+            attempts_left -= 1
+            if attempts_left > 0:
+                data['attempts_left'] = attempts_left
+                await message.reply(f"Капчу введено невірно. Залишилося спроб: {attempts_left}. "
+                                    f"Спробуйте ще раз:")
+            else:
+                await message.reply("Ви вичерпали всі спроби. Реєстрація відхилена")
+                await state.finish()
