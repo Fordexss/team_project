@@ -15,7 +15,7 @@ CAPTCHA_IMAGE_PATH = "captcha.png"
 
 
 async def send_captcha_image(user_id, message, state):
-    captcha_text = ''.join(random.choices(string.ascii_letters + string.digits, k=7))
+    captcha_text = ''.join(random.choices(string.ascii_letters + string.digits, k=5))
 
     captcha_image = captcha.generate(captcha_text)
 
