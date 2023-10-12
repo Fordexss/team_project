@@ -4,6 +4,7 @@ import os
 from selenium.webdriver.edge.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.edge.options import Options
 
 import sqlite3
 
@@ -23,10 +24,13 @@ cr = conn.cursor()
 
 
 def pars_video():
-    driver = webdriver.Edge(service=s)
+    edge_options = Options()
+    edge_options.use_chromium = True  
+    edge_options.add_argument("--headless")
+    driver = webdriver.Edge(service=s, options=edge_options)
     link = 'https://www.youtube.com/results?search_query='
     try:
-        driver.maximize_window()
+        
         for search_querry in for_search:
             driver.get(link + search_querry.replace(' ', '+'))
             time.sleep(5)
@@ -54,3 +58,5 @@ def pars_video():
     res = cr.fetchall()
     print(len(res))
     conn.close()
+    
+pars_video()
