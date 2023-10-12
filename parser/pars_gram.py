@@ -24,56 +24,58 @@ forB2 = ['Майбутній тривалий час', 'Майбутній до�
             'Ступені порівняння прикметників', 'Порядок прикметників перед іменниками', 'Майбутній тривалий час', 'Майбутній доконаний час',
             'Минулий доконаний час', 'Модальні дієслова (Modal Verbs)']
 
-res = requests.get('https://teacheng.info/theory/grammar')
-soup =  BeautifulSoup(res.content, "html.parser")
-items = soup.find('div', class_ = 'post-content')
-for a in items.find_all('a'):
-    if a.text in forA1:
-        href = a.get("href")
-        link = 'https://teacheng.info/' + href
-        req = requests.get(link)
-        new_soup = BeautifulSoup(req.content, "html.parser")
-        theme = new_soup.find('h1', class_ = 'post-title')
-        text = new_soup.find('div', class_ = 'post-content')
-        cr.execute("""INSERT INTO grammar(level, theme, text) VALUES('A1', ?, ? )""", (theme.text, text.text))   
+def pars_grammar():
+    res = requests.get('https://teacheng.info/theory/grammar')
+    soup =  BeautifulSoup(res.content, "html.parser")
+    items = soup.find('div', class_ = 'post-content')
+    for a in items.find_all('a'):
+        if a.text in forA1:
+            href = a.get("href")
+            link = 'https://teacheng.info/' + href
+            req = requests.get(link)
+            new_soup = BeautifulSoup(req.content, "html.parser")
+            theme = new_soup.find('h1', class_ = 'post-title')
+            text = new_soup.find('div', class_ = 'post-content')
+            cr.execute("""INSERT INTO grammar(level, theme, text) VALUES('A1', ?, ? )""", (theme.text, text.text))   
+                    
                 
+        elif a.text in forA2:
+            href = a.get("href")
+            link = 'https://teacheng.info/' + href
+            req = requests.get(link)
+            new_soup = BeautifulSoup(req.content, "html.parser")
+            theme = new_soup.find('h1', class_ = 'post-title')
+            text = new_soup.find('div', class_ = 'post-content')
+            cr.execute("""INSERT INTO grammar(level, theme, text) VALUES('A2', ?, ? )""", (theme.text, text.text))   
             
-    elif a.text in forA2:
-        href = a.get("href")
-        link = 'https://teacheng.info/' + href
-        req = requests.get(link)
-        new_soup = BeautifulSoup(req.content, "html.parser")
-        theme = new_soup.find('h1', class_ = 'post-title')
-        text = new_soup.find('div', class_ = 'post-content')
-        cr.execute("""INSERT INTO grammar(level, theme, text) VALUES('A2', ?, ? )""", (theme.text, text.text))   
-        
-    elif a.text in forB1:
-        href = a.get("href")
-        link = 'https://teacheng.info/' + href
-        req = requests.get(link)
-        new_soup = BeautifulSoup(req.content, "html.parser")
-        theme = new_soup.find('h1', class_ = 'post-title')
-        text = new_soup.find('div', class_ = 'post-content')
-        cr.execute("""INSERT INTO grammar(level, theme, text) VALUES('B1', ?, ? )""", (theme.text, text.text))   
+        elif a.text in forB1:
+            href = a.get("href")
+            link = 'https://teacheng.info/' + href
+            req = requests.get(link)
+            new_soup = BeautifulSoup(req.content, "html.parser")
+            theme = new_soup.find('h1', class_ = 'post-title')
+            text = new_soup.find('div', class_ = 'post-content')
+            cr.execute("""INSERT INTO grammar(level, theme, text) VALUES('B1', ?, ? )""", (theme.text, text.text))   
+                
+        elif a.text in forB2:
+            href = a.get("href")
+            link = 'https://teacheng.info/' + href
+            req = requests.get(link)
+            new_soup = BeautifulSoup(req.content, "html.parser")
+            theme = new_soup.find('h1', class_ = 'post-title')
+            text = new_soup.find('div', class_ = 'post-content')
+            cr.execute("""INSERT INTO grammar(level, theme, text) VALUES('B2', ?, ? )""", (theme.text, text.text))   
             
-    elif a.text in forB2:
-        href = a.get("href")
-        link = 'https://teacheng.info/' + href
-        req = requests.get(link)
-        new_soup = BeautifulSoup(req.content, "html.parser")
-        theme = new_soup.find('h1', class_ = 'post-title')
-        text = new_soup.find('div', class_ = 'post-content')
-        cr.execute("""INSERT INTO grammar(level, theme, text) VALUES('B2', ?, ? )""", (theme.text, text.text))   
-        
-    else:
-        href = a.get("href")
-        link = 'https://teacheng.info/' + href
-        req = requests.get(link)
-        new_soup = BeautifulSoup(req.content, "html.parser")
-        theme = new_soup.find('h1', class_ = 'post-title')
-        text = new_soup.find('div', class_ = 'post-content')
-        cr.execute("""INSERT INTO grammar(level, theme, text) VALUES('additionally', ?, ? )""", (theme.text, text.text))   
-        
-cr.execute("""SELECT * FROM grammar""")
-res = cr.fetchall()
-print(res)
+        else:
+            href = a.get("href")
+            link = 'https://teacheng.info/' + href
+            req = requests.get(link)
+            new_soup = BeautifulSoup(req.content, "html.parser")
+            theme = new_soup.find('h1', class_ = 'post-title')
+            text = new_soup.find('div', class_ = 'post-content')
+            cr.execute("""INSERT INTO grammar(level, theme, text) VALUES('additionally', ?, ? )""", (theme.text, text.text))   
+            
+    cr.execute("""SELECT * FROM grammar""")
+    res = cr.fetchall()
+    print(res)
+    conn.close()
