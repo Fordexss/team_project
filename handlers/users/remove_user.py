@@ -5,7 +5,7 @@ from loader import dp, db_user
 from states import RegistrationStates
 
 
-@dp.message_handler(commands=['remove_me'])
+@dp.message_handler(commands=['remove_me'], state="*")
 async def remove_user(msg: types.Message):
     user_id = msg.from_user.id
 
@@ -32,4 +32,4 @@ async def handle_confirmation(msg: types.Message, state: FSMContext):
         elif msg.text.lower() == 'ні':
             await msg.reply("Видалення аккаунта скасовано.")
 
-    await state.finish()
+        await state.finish()
