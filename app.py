@@ -1,6 +1,6 @@
 import logging
 import handlers
-from loader import dp, db_bot, db_user
+from loader import dp, db_bot, db_user, db_parse
 from utils.set_bot_commands import set_default_commands
 from aiogram import executor
 from utils.notify_admins import on_startup_notify
@@ -10,6 +10,7 @@ async def on_startup(dispatcher):
     db_bot.open()
     db_user.connect(db_bot)
     db_user.create_default_table()
+    db_parse.connect(db_bot)
     logging.info("Db has opened connection")
     await set_default_commands(dispatcher)
     await on_startup_notify(dispatcher)

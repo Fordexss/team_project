@@ -1,8 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
+from data.config import DB_FILE
 import sqlite3
 
-conn = sqlite3.connect('data.db')
+conn = sqlite3.connect(DB_FILE)
 
 cr = conn.cursor()
 cr.execute("""CREATE TABLE IF NOT EXISTS grammar(
@@ -76,6 +77,6 @@ def pars_grammar():
             cr.execute("""INSERT INTO grammar(level, theme, text) VALUES('additionally', ?, ? )""", (theme.text, text.text))   
             
     cr.execute("""SELECT * FROM grammar""")
-    res = cr.fetchall()
+    res = cr.fetchone()
     print(res)
     conn.close()
