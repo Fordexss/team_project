@@ -5,11 +5,18 @@ from selenium.webdriver.edge.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.edge.options import Options
+<<<<<<< HEAD
 from data.config import DRIVER, DB_FILE
 
 import sqlite3
 
 s = Service(executable_path=DRIVER)
+=======
+from data.config import DB_FILE
+import sqlite3
+
+s = Service(executable_path='C:\\Users\\HP\\Python_0\\team_project\\parser\\edge_driver\\msedgedriver.exe')
+>>>>>>> origin/master
 
 for_search = ['Простий майбутній час', 'Простий минулий час', 'Простий теперішній час', 'Негативні речення', 'Види запитань',
          'Невизначений артикль',  'Присвійні займенники', 'Особисті займенники', 'Прикметник (Adjective)', 'Прислівник (Adverb)', 'Питальні займенники', 'Структура речення (Sentence Structure)',
@@ -55,6 +62,10 @@ def pars_video():
         driver.quit()
 
     cr.execute("SELECT * FROM grammar WHERE video NOT NULL")
-    res = cr.fetchall()
+    res = cr.fetchone()
     print(len(res))
     conn.close()
+<<<<<<< HEAD
+=======
+    
+>>>>>>> origin/master

@@ -14,3 +14,10 @@ class RegistrationStates(StatesGroup):
 class HowDoISayStates(StatesGroup):
     Ukrainian = State()
     English = State()
+
+
+# for learn
+class Learn(StatesGroup):
+    Grammar = State()
+    Words = State()
+    Video = State()

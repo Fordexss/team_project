@@ -15,7 +15,7 @@ CAPTCHA_IMAGE_PATH = "captcha.png"
 
 
 async def send_captcha_image(user_id, message, state):
-    captcha_text = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+    captcha_text = ''.join(random.choices(string.ascii_letters + string.digits, k=5))
 
     captcha_image = captcha.generate(captcha_text)
 
@@ -111,7 +111,7 @@ async def process_captcha(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
     async with state.proxy() as data:
         correct_captcha = data.get('captcha')
-        attempts_left = data.get('attempts_left', 2)
+        attempts_left = data.get('attempts_left', 3)
 
         if message.text.lower() == correct_captcha.lower():
             db_user.save_user_data(data, user_id)
