@@ -1,1 +1,2 @@
 from .command_states import RegistrationStates, HowDoISayStates
+from .initial_test_states import InitialTestStates
