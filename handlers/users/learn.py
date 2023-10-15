@@ -25,9 +25,9 @@ async def format_grammar(call: types.CallbackQuery):
                                reply_markup=grammar_choose)
     # await Learn.Grammar.set()
 
-@dp.callback_query_handler(text='grm1', state='*')
-async def text_grammar(call: types.CallbackQuery):
-    await call.message.answer(text=f'{db_parse.grammar_text()}')
+# @dp.callback_query_handler(text='grm1', state='*')
+# async def text_grammar(call: types.CallbackQuery):
+#     await call.message.answer(text=f'{db_parse.grammar_text()}')
 
 
 # @dp.callback_query_handler(text='new', state='*')

@@ -15,9 +15,3 @@ class LearnInfo(BasicInterface):
             return result
         else:
             return "Щоб продовжити вам потрібно зареєструватись"
-
-
-
-    def close(self):
-        if hasattr(self, 'conn'):
-            self.conn.close()
