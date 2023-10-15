@@ -1,8 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
+from data.config import DB_FILE
 import sqlite3
 
-conn = sqlite3.connect('data.db')
+conn = sqlite3.connect(DB_FILE)
 
 cr = conn.cursor()
 cr.execute("""CREATE TABLE IF NOT EXISTS lex(
@@ -74,7 +75,7 @@ def pars_lexic():
                         cr.execute("""INSERT INTO lex(level, word, translate) VALUES('additionally', ?, ?)""", (word_pairs[0].text, word_pairs[1].text))
                         
     cr.execute("""SELECT * FROM lex""")
-    res = cr.fetchall()
+    res = cr.fetchone()
     print(res)
     conn.close()
             

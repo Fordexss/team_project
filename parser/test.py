@@ -1,9 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
-from data.config import DB_FILE
+# from data.config import DB_FILE
 import sqlite3
 
-conn = sqlite3.connect(DB_FILE)
+conn = sqlite3.connect('database')
 
 cr = conn.cursor()
 cr.execute("""CREATE TABLE IF NOT EXISTS grammar(
@@ -30,53 +30,28 @@ def pars_grammar():
     soup =  BeautifulSoup(res.content, "html.parser")
     items = soup.find('div', class_ = 'post-content')
     for a in items.find_all('a'):
-        if a.text in forA1:
-            href = a.get("href")
-            link = 'https://teacheng.info/' + href
-            req = requests.get(link)
-            new_soup = BeautifulSoup(req.content, "html.parser")
-            theme = new_soup.find('h1', class_ = 'post-title')
-            text = new_soup.find('div', class_ = 'post-content')
-            cr.execute("""INSERT INTO grammar(level, theme, text) VALUES('A1', ?, ? )""", (theme.text, text.text))   
-                    
-                
-        elif a.text in forA2:
-            href = a.get("href")
-            link = 'https://teacheng.info/' + href
-            req = requests.get(link)
-            new_soup = BeautifulSoup(req.content, "html.parser")
-            theme = new_soup.find('h1', class_ = 'post-title')
-            text = new_soup.find('div', class_ = 'post-content')
-            cr.execute("""INSERT INTO grammar(level, theme, text) VALUES('A2', ?, ? )""", (theme.text, text.text))   
-            
+       
+        href = a.get("href")
+        link = 'https://teacheng.info/' + href
+        req = requests.get(link)
+        new_soup = BeautifulSoup(req.content, "html.parser")
+        theme = new_soup.find('h1', class_ = 'post-title')
+        text = new_soup.find('div', class_ = 'post-content')
+        cr.execute("""INSERT INTO grammar(level, theme, text) VALUES('A1', ?, ? )""", (theme.text, text.text))   
+        if a.text in forA1:            
+            cr.execute("""INSERT INTO grammar(level, theme, text) VALUES('A1', ?, ? )""", (theme.text, text.text))
+        elif a.text in forA2:    
+            cr.execute("""INSERT INTO grammar(level, theme, text) VALUES('A2', ?, ? )""", (theme.text, text.text))
         elif a.text in forB1:
-            href = a.get("href")
-            link = 'https://teacheng.info/' + href
-            req = requests.get(link)
-            new_soup = BeautifulSoup(req.content, "html.parser")
-            theme = new_soup.find('h1', class_ = 'post-title')
-            text = new_soup.find('div', class_ = 'post-content')
-            cr.execute("""INSERT INTO grammar(level, theme, text) VALUES('B1', ?, ? )""", (theme.text, text.text))   
-                
+            cr.execute("""INSERT INTO grammar(level, theme, text) VALUES('B1', ?, ? )""", (theme.text, text.text))    
         elif a.text in forB2:
-            href = a.get("href")
-            link = 'https://teacheng.info/' + href
-            req = requests.get(link)
-            new_soup = BeautifulSoup(req.content, "html.parser")
-            theme = new_soup.find('h1', class_ = 'post-title')
-            text = new_soup.find('div', class_ = 'post-content')
-            cr.execute("""INSERT INTO grammar(level, theme, text) VALUES('B2', ?, ? )""", (theme.text, text.text))   
-            
+            cr.execute("""INSERT INTO grammar(level, theme, text) VALUES('B2', ?, ? )""", (theme.text, text.text)) 
         else:
-            href = a.get("href")
-            link = 'https://teacheng.info/' + href
-            req = requests.get(link)
-            new_soup = BeautifulSoup(req.content, "html.parser")
-            theme = new_soup.find('h1', class_ = 'post-title')
-            text = new_soup.find('div', class_ = 'post-content')
-            cr.execute("""INSERT INTO grammar(level, theme, text) VALUES('additionally', ?, ? )""", (theme.text, text.text))   
-            
+            cr.execute("""INSERT INTO grammar(level, theme, text) VALUES('additionally', ?, ? )""", (theme.text, text.text))  
+        
     cr.execute("""SELECT * FROM grammar""")
     res = cr.fetchone()
     print(res)
     conn.close()
+    
+pars_grammar()
