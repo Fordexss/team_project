@@ -14,8 +14,5 @@ storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
 db_bot = BotDB(config.DB_FILE)
 db_user = DbUserInterface()
-<<<<<<< HEAD
 db_parse = LearnInfo()
-=======
 db_question = DbQuestionInterface()
->>>>>>> origin/master
