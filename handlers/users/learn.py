@@ -1,4 +1,5 @@
 import sqlite3
+import random
 
 from aiogram import types
 from aiogram.dispatcher import FSMContext
@@ -10,7 +11,9 @@ from parser.pars_lex import pars_lexic
 from parser.pars_vid import pars_video
 from utils.db_api.db_parse import LearnInfo
 
-from loader import dp, db_parse
+from loader import dp, db_parse, db_bot, grammar_text
+
+LEVELS = ('A1', 'A2', 'B1', 'B2', 'C1')
 
 @dp.message_handler(commands='learn')
 async def start_learn(message: types.Message):
@@ -23,11 +26,19 @@ async def start_learn(message: types.Message):
 async def format_grammar(call: types.CallbackQuery):
     await call.message.answer(text='Which format you want to learn grammar⬇️',
                                reply_markup=grammar_choose)
-    # await Learn.Grammar.set()
+    await Learn.Grammar.set()
 
-# @dp.callback_query_handler(text='grm1', state='*')
-# async def text_grammar(call: types.CallbackQuery):
-#     await call.message.answer(text=f'{db_parse.grammar_text()}')
+@dp.callback_query_handler(text='grm1', state='*')
+async def text_grammar(call: types.CallbackQuery):
+    user_id = int(call.from_user.id)
+    level = db_parse.user_level(user_id)  
+
+    if level in LEVELS:
+        grammar_text1 = db_parse.grammar_text(level)
+        await call.message.answer(text=grammar_text1)
+    else:
+        await call.message.answer("Grammar text not found for this level.")
+    # await call.message.answer(text=f'{LearnInfo.grammar_text(LearnInfo.user_level(user_id))}')
 
 
 # @dp.callback_query_handler(text='new', state='*')

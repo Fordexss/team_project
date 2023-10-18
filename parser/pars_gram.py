@@ -74,7 +74,7 @@ def pars_grammar():
             new_soup = BeautifulSoup(req.content, "html.parser")
             theme = new_soup.find('h1', class_ = 'post-title')
             text = new_soup.find('div', class_ = 'post-content')
-            cr.execute("""INSERT INTO grammar(level, theme, text) VALUES('additionally', ?, ? )""", (theme.text, text.text))   
+            cr.execute("""INSERT INTO grammar(level, theme, text) VALUES('C1', ?, ? )""", (theme.text, text.text))   
             
     cr.execute("""SELECT * FROM grammar""")
     res = cr.fetchone()
