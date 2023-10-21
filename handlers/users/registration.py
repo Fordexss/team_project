@@ -4,10 +4,11 @@ import string
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import ReplyKeyboardRemove, ReplyKeyboardMarkup, KeyboardButton, InputFile
+from keyboards.default import sure_kb
 from captcha.image import ImageCaptcha
 
 from loader import dp, db_user
-from states import RegistrationStates
+from states import RegistrationStates, InitialTestStates
 
 captcha = ImageCaptcha(width=450, height=200)
 
@@ -117,7 +118,8 @@ async def process_captcha(message: types.Message, state: FSMContext):
             db_user.save_user_data(data, user_id)
             await message.reply("Капчу введено вірно. Реєстрація завершена!",
                                 reply_markup=ReplyKeyboardRemove())
-            await state.finish()
+            await message.answer('Тепер давайте визначимо ваш рівень володіння англійською!', reply_markup=sure_kb)
+            await InitialTestStates.start_initial_test.set()
         else:
             attempts_left -= 1
             if attempts_left > 0:

@@ -8,6 +8,6 @@ async def set_default_commands(dp):
             types.BotCommand("info", "Вывести справку"),
             types.BotCommand("remove_me", "Видалити мене з бази даних"),
             types.BotCommand("howdoisay", "Перекладач"),
-            types.BotCommand('start_initial_test', 'Почати тест на визначення рівня англійської')
+            types.BotCommand('test', 'Почати тест на визначення рівня англійської')
         ]
     )
