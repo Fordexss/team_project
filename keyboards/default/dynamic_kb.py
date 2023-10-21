@@ -7,3 +7,10 @@ def dynamic_reply_kb(quiz_button):
         ],
         resize_keyboard=True,
     )
+
+sure_kb = ReplyKeyboardMarkup(
+            keyboard=[
+                [KeyboardButton(text='Звісно!')],
+            ],
+            resize_keyboard=True,
+        )

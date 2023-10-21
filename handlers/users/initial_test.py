@@ -4,7 +4,7 @@ import random
 
 from keyboards.default import dynamic_reply_kb
 from keyboards.inline import details, main_page_kb, prev_button, next_button, answers_markup
-from loader import dp, ques, db_question
+from loader import dp, ques, db_question, bot
 from states import InitialTestStates
 from aiogram.types import ReplyKeyboardRemove
 from utils.misc import ROWS_PER_PAGE, TOTAL_PAGES, TOTAL_QUESTIONS, A1_LEVEL_DESC, A2_LEVEL_DESC, B1_LEVEL_DESC, B2_LEVEL_DESC, C1_LEVEL_DESC
@@ -61,9 +61,19 @@ def sort_by_lvl(cr, lvl, quality):
             a += 1
     my_qns.clear()
 
-@dp.message_handler(commands='start_initial_test')
-async def starttest(message: types.Message, state: FSMContext):
-    await message.answer('Розпочнімо базовий тест для визначення вашого рівня англійської!')
+@dp.message_handler(commands='test') 
+async def first_question(message: types.Message, state: FSMContext):
+    if db_question.user_in_db(message.from_user.id):
+        async with state.proxy() as data:
+            data['score'] = 0
+        await message.answer('⬇️ Перше питання:')
+        await message.answer(ques[1][1], reply_markup=dynamic_reply_kb(ques[1][4].split('&')))
+        await InitialTestStates.second_q.set()
+    else:
+        await message.answer('Ви ще не зареєстровані, тож не можете пройти тест! Для раєстрації — /start')
+
+@dp.message_handler(lambda message: message.text == "Звісно!", state=InitialTestStates.start_initial_test)
+async def first_question(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['score'] = 0
     await message.answer('⬇️ Перше питання:')
@@ -132,7 +142,9 @@ def init_questions():
     @dp.message_handler(state="*", content_types=types.ContentTypes.ANY)
     async def bot_echo_all(message: types.Message, state: FSMContext):
         my_state = await state.get_state()
-        if my_state in InitialTestStates and my_state != 'InitialTestStates:end_of_initial_test':
+        if my_state == 'InitialTestStates:start_initial_test':
+            await message.answer('Щоб почати тест на визначення рівня володінння англійською мовою, напишіть "Звісно!"')
+        elif my_state in InitialTestStates and my_state != 'InitialTestStates:end_of_initial_test':
             await message.answer("Будь ласка, оберіть відповідь із доступних!")
         else:
             pass

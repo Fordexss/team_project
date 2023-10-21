@@ -117,3 +117,16 @@ class DbQuestionInterface(BasicInterface):
             self.create_column_english_level()
         self.cursor.execute("UPDATE students SET english_level = ? WHERE id = ?", (level, user_id))
         self.conn.commit()
+
+    def user_in_db(self, user_id):
+        self.cursor.execute(f"""
+        SELECT id
+        FROM students
+        WHERE id = {user_id}
+        """)
+        # return self.cursor.fetchone()
+        is_user_in_db = self.cursor.fetchone()
+        return bool(is_user_in_db)
+
+        # is_user_exists = self.cursor.fetchone()[0]
+        # return bool(is_user_exists)

@@ -1,1 +1,1 @@
-from .dynamic_kb import dynamic_reply_kb
+from .dynamic_kb import dynamic_reply_kb, sure_kb

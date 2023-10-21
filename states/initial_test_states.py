@@ -2,6 +2,7 @@ from aiogram.dispatcher.filters.state import StatesGroup, State
 
 class InitialTestStates(StatesGroup):
     start_initial_test = State()
+    first_q = State()
     second_q = State()
     third_q = State()
     fourth_q = State()
