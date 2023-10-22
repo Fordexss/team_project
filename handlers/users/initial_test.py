@@ -8,9 +8,8 @@ from keyboards.default import dynamic_reply_kb
 from keyboards.inline import details, main_page_kb, prev_button, next_button, answers_markup
 from loader import dp, ques, db_question
 from states import InitialTestStates
-from utils.misc import ROWS_PER_PAGE, TOTAL_PAGES, A1_LEVEL_DESC, A2_LEVEL_DESC, B1_LEVEL_DESC, B2_LEVEL_DESC, \
-    C1_LEVEL_DESC
- 
+from utils.misc import ROWS_PER_PAGE, TOTAL_PAGES, A1_LEVEL_DESC, A2_LEVEL_DESC, B1_LEVEL_DESC, B2_LEVEL_DESC, C1_LEVEL_DESC
+
 data_pages_a = []
  
  
