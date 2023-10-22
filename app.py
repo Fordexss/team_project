@@ -1,7 +1,6 @@
 import logging
 import handlers
-from loader import dp, db_bot, db_user, db_parse
-from loader import dp, db_bot, db_user, db_question
+from loader import dp, db_bot, db_user, db_parse, db_question
 from utils.set_bot_commands import set_default_commands
 from aiogram import executor
 from utils.notify_admins import on_startup_notify

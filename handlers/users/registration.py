@@ -29,9 +29,7 @@ async def send_captcha_image(user_id, message, state):
     # Відправляємо зображення капчі як InputFile
     with open(CAPTCHA_IMAGE_PATH, 'rb') as image_file:
         await message.reply_photo(InputFile(image_file),
-                                  caption=f"Дані відправлено та збережено в базі даних. "
-                                          f"Дякуємо за реєстрацію!\n"
-                                          f"Перед завершенням реєстрації",
+                                  caption=f"Реєстрацію майже завершено!\nОстанній крок: пройдіть капчу",
                                   reply_markup=ReplyKeyboardRemove())
 
 

@@ -3,6 +3,7 @@ from aiogram.dispatcher import FSMContext
 
 from loader import dp, db_user
 from states import RegistrationStates
+from keyboards.default import yes_n_no
 
 
 @dp.message_handler(commands=['remove_me'], state="*")
@@ -12,7 +13,7 @@ async def remove_user(msg: types.Message):
     if db_user.user_exists(user_id):
         # Питаємо користувача, чи він впевнений у видаленні
         await msg.reply("Ви впевнені, що хочете видалити свій аккаунт? Ця дія не може бути скасована.\n"
-                        "Відповідь 'Так' для підтвердження або 'Ні' для скасування.")
+                        "Відповідь 'Так' для підтвердження або 'Ні' для скасування.", reply_markup=yes_n_no)
 
         # Встановлюємо стан підтвердження
         await RegistrationStates.CONFIRMATION_STATE.set()
