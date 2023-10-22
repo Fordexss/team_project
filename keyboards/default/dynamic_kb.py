@@ -14,3 +14,10 @@ sure_kb = ReplyKeyboardMarkup(
             ],
             resize_keyboard=True,
         )
+
+yes_n_no = ReplyKeyboardMarkup(
+            keyboard=[
+                [KeyboardButton(text='Так'), KeyboardButton('Ні')],
+            ],
+            resize_keyboard=True,
+        )
