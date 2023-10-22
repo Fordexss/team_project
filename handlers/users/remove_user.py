@@ -1,5 +1,6 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
+from aiogram.types import ReplyKeyboardRemove
 
 from loader import dp, db_user
 from states import RegistrationStates
@@ -29,8 +30,10 @@ async def handle_confirmation(msg: types.Message, state: FSMContext):
     async with state.proxy() as data:
         if msg.text.lower() == 'так':
             db_user.remove_user_from_db(user_id)
-            await msg.reply("Ваш аккаунт успішно видалено.")
+            await msg.reply("Ваш аккаунт успішно видалено.",
+                                reply_markup=ReplyKeyboardRemove())
         elif msg.text.lower() == 'ні':
-            await msg.reply("Видалення аккаунта скасовано.")
+            await msg.reply("Видалення аккаунта скасовано.",
+                                reply_markup=ReplyKeyboardRemove())
 
         await state.finish()
