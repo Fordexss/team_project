@@ -1,16 +1,19 @@
+import random
+ 
 from aiogram import types
 from aiogram.dispatcher import FSMContext
-import random
-
+from aiogram.types import ReplyKeyboardRemove
+ 
 from keyboards.default import dynamic_reply_kb
 from keyboards.inline import details, main_page_kb, prev_button, next_button, answers_markup
-from loader import dp, ques, db_question, bot
+from loader import dp, ques, db_question
 from states import InitialTestStates
-from aiogram.types import ReplyKeyboardRemove
-from utils.misc import ROWS_PER_PAGE, TOTAL_PAGES, TOTAL_QUESTIONS, A1_LEVEL_DESC, A2_LEVEL_DESC, B1_LEVEL_DESC, B2_LEVEL_DESC, C1_LEVEL_DESC
-
+from utils.misc import ROWS_PER_PAGE, TOTAL_PAGES, A1_LEVEL_DESC, A2_LEVEL_DESC, B1_LEVEL_DESC, B2_LEVEL_DESC, \
+    C1_LEVEL_DESC
+ 
 data_pages_a = []
-
+ 
+ 
 def question(prev_number, number, num_name, state_name, next_number_state):
     @dp.message_handler(text=ques[prev_number][4].split('&'), state=state_name)
     async def que(message: types.Message, state: FSMContext):
@@ -19,12 +22,14 @@ def question(prev_number, number, num_name, state_name, next_number_state):
                 data['score'] += ques[number][6]
                 data[f'answer_{prev_number}'] = f'✅ Ви правильно відповіли! Відповідь: {ques[prev_number][5]}'
             else:
-                data[f'answer_{prev_number}'] = f"❌ Ви неправильно відповіли. Правильна відповідь: {ques[prev_number][5]}"
+                data[
+                    f'answer_{prev_number}'] = f"❌ Ви неправильно відповіли. Правильна відповідь: {ques[prev_number][5]}"
         await message.answer('📌 Ваша відповідь зарахована.')
-        await message.answer(f'⬇️ {num_name} питання:') 
+        await message.answer(f'⬇️ {num_name} питання:')
         await message.answer(ques[number][1], reply_markup=dynamic_reply_kb(ques[number][4].split('&')))
         await next_number_state.set()
-
+ 
+ 
 def sort_by_lvl(cr, lvl, quality):
     my_qns = set()
     while len(my_qns) < quality:
@@ -60,8 +65,9 @@ def sort_by_lvl(cr, lvl, quality):
             ques[a] = list(q)
             a += 1
     my_qns.clear()
-
-@dp.message_handler(commands='test') 
+ 
+ 
+@dp.message_handler(commands='test', state="*")
 async def first_question(message: types.Message, state: FSMContext):
     if db_question.user_in_db(message.from_user.id):
         async with state.proxy() as data:
@@ -71,7 +77,8 @@ async def first_question(message: types.Message, state: FSMContext):
         await InitialTestStates.second_q.set()
     else:
         await message.answer('Ви ще не зареєстровані, тож не можете пройти тест! Для раєстрації — /start')
-
+ 
+ 
 @dp.message_handler(lambda message: message.text == "Звісно!", state=InitialTestStates.start_initial_test)
 async def first_question(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
@@ -79,7 +86,8 @@ async def first_question(message: types.Message, state: FSMContext):
     await message.answer('⬇️ Перше питання:')
     await message.answer(ques[1][1], reply_markup=dynamic_reply_kb(ques[1][4].split('&')))
     await InitialTestStates.second_q.set()
-
+ 
+ 
 def init_questions():
     sort_by_lvl(db_question.cursor, 'A1', 5)
     sort_by_lvl(db_question.cursor, 'A2', 5)
@@ -110,8 +118,7 @@ def init_questions():
     question(22, 23, 'Двадцять третє', InitialTestStates.twenty_third_q, InitialTestStates.twenty_fourth_q)
     question(23, 24, 'Двадцять четверте', InitialTestStates.twenty_fourth_q, InitialTestStates.twenty_fifth_q)
     question(24, 25, 'Двадцять п\'яте', InitialTestStates.twenty_fifth_q, InitialTestStates.end_of_initial_test)
-
-
+ 
     @dp.message_handler(text=ques[25][4].split('&'), state=InitialTestStates.end_of_initial_test)
     async def que(message: types.Message, state: FSMContext):
         async with state.proxy() as data:
@@ -136,9 +143,11 @@ def init_questions():
             user_id = message.from_user.id
             db_question.update_english_level(level=level, user_id=user_id)
         await message.answer('Ваша відповідь зарахована.')
-        await message.answer(f'Вітаємо! Тест на визначення вашого рівня англійської завершено! Ваш результат: {data["score"]}. Ваш рівень — {data["level"]}.', reply_markup=ReplyKeyboardRemove())
+        await message.answer(
+            f'Вітаємо! Тест на визначення вашого рівня англійської завершено! Ваш результат: {data["score"]}. Ваш рівень — {data["level"]}.',
+            reply_markup=ReplyKeyboardRemove())
         await message.answer('Додатково:', reply_markup=details(data['level']))
-
+ 
     @dp.message_handler(state="*", content_types=types.ContentTypes.ANY)
     async def bot_echo_all(message: types.Message, state: FSMContext):
         my_state = await state.get_state()
@@ -148,7 +157,8 @@ def init_questions():
             await message.answer("Будь ласка, оберіть відповідь із доступних!")
         else:
             pass
-
+ 
+ 
 @dp.callback_query_handler(text='answers', state=InitialTestStates.end_of_initial_test)
 async def check_answers(call: types.CallbackQuery, state: FSMContext):
     answers = ''
@@ -159,7 +169,8 @@ async def check_answers(call: types.CallbackQuery, state: FSMContext):
     data_pages_a.extend(answers.split('\n'))
     current_page = 0
     await send_current_page(call, data_pages_a, current_page)
-
+ 
+ 
 async def send_current_page(call, data_pages, current_page):
     if current_page < len(data_pages):
         start_index = current_page * ROWS_PER_PAGE
@@ -172,7 +183,8 @@ async def send_current_page(call, data_pages, current_page):
         if current_page < TOTAL_PAGES - 1:
             buttons.append(next_button)
         await call.message.edit_text(text, reply_markup=answers_markup(buttons))
-
+ 
+ 
 @dp.callback_query_handler(text='next_page', state=InitialTestStates.end_of_initial_test)
 async def next_page(call: types.CallbackQuery, state: FSMContext):
     async with state.proxy() as data:
@@ -181,7 +193,8 @@ async def next_page(call: types.CallbackQuery, state: FSMContext):
             current_page += 1
             data['current_page'] = current_page
             await send_current_page(call, data_pages_a, current_page)
-
+ 
+ 
 @dp.callback_query_handler(text='prev_page', state=InitialTestStates.end_of_initial_test)
 async def prev_page(call: types.CallbackQuery, state: FSMContext):
     async with state.proxy() as data:
@@ -190,13 +203,14 @@ async def prev_page(call: types.CallbackQuery, state: FSMContext):
             current_page -= 1
             data['current_page'] = current_page
             await send_current_page(call, data_pages_a, current_page)
-
+ 
+ 
 @dp.callback_query_handler(text='main', state=InitialTestStates.end_of_initial_test)
 async def main_page(call: types.CallbackQuery, state: FSMContext):
     async with state.proxy() as data:
         await call.message.edit_text('Додатково:', reply_markup=details(data['level']))
-        
-
+ 
+ 
 @dp.callback_query_handler(text='about_lvl', state=InitialTestStates.end_of_initial_test)
 async def check_answers(call: types.CallbackQuery, state: FSMContext):
     async with state.proxy() as data:
