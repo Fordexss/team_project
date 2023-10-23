@@ -9,16 +9,24 @@ language = InlineKeyboardMarkup(
 
 general_choose = InlineKeyboardMarkup(
     inline_keyboard=[
-        [InlineKeyboardButton(text='Grammar🎓', callback_data='grm')],
+        [InlineKeyboardButton(text='Grammar🎓', callback_data='grm1')],
         [InlineKeyboardButton(text='New words🗣', callback_data='new')],
         [InlineKeyboardButton(text='Video🎬', callback_data='vid')],
     ]
 )
 
-grammar_choose = InlineKeyboardMarkup(
+learning = InlineKeyboardMarkup(
     inline_keyboard=[
-        [InlineKeyboardButton(text='Message (text)💬', callback_data='grm1')],
-        [InlineKeyboardButton(text='Video🎥', callback_data='grm2')],
+        [InlineKeyboardButton(text='I have learned', callback_data='hle')],
+        [InlineKeyboardButton(text='Back', callback_data='bak')],
     ]
 )
+
+
+# grammar_choose = InlineKeyboardMarkup(
+#     inline_keyboard=[
+#         [InlineKeyboardButton(text='Message (text)💬', callback_data='grm1')],
+#         [InlineKeyboardButton(text='Video🎥', callback_data='grm2')],
+#     ]
+# )
 

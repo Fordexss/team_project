@@ -9,6 +9,9 @@ from utils.db_api.db_question import DbQuestionInterface
 
 ques = {}
 
+# dict for grammar text
+grammar_text = {}
+
 bot = Bot(token=config.BOT_TOKEN, parse_mode=types.ParseMode.HTML)
 storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
